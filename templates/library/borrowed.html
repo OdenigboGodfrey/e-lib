@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="widt h=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Items</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Author</th> 
+            <th>Borrowed on</th>
+            <th>Returned</th>
+            <th></th>
+        </tr>
+        {% if borrowed %}
+            {% for child in borrowed %}
+                <tr>
+                    <td>{{child.item.item_type}}</td>
+                    <td>{{child.item.title}}</td>
+                    <td>{{child.item.author}}</td>
+                    <td>{{child.borrowed_on}}</td>
+                    <td>
+                        {% if child.returned == -1 %}
+                            No
+                        {% else %}
+                            Yes
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td>{{app_strings.failed_to_get_borrowed_items}}</td>
+            </tr>
+        {% endif %}
+        
+    </table>
+</body>
+</html>

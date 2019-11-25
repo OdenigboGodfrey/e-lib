@@ -58,22 +58,73 @@ class Item:
         return data
 
     
-    def borrow(self, item_id):
+    def borrow(self, item_id, registration_id):
         data = utils().init()
         try:
-            item = self.get(item_id=item_id, app_globals.SINGLE)
-            if item['display_message'] == NEGATIVE:
+            item = self.get(item_id=item_id, fetch=app_globals.SINGLE)
+            if item['status'] == NEGATIVE:
                 # an error occured with getting item
                 raise Exception('item_id')
-            bor
+            borrowed_object = borrowed()
+            borrowed_object.item = item['items']
+            user = User().get_user(registration_id)
+            if user['status'] == NEGATIVE:
+                raise Exception('user_not_found')
+            borrowed_object.user = user['user']
+            borrowed_object.max_duration = 7
+            borrowed_object.save()
+
+            self.reduce_item_quantity(item_id)
+
+            data['status'] = POSITIVE
+            data['messages'].append(utils().new_message(POSITIVE, AppStrings().get_single("borrowed_item"), data=data))
         except Exception as e:
-            data['status'] = NEUTRAL
+            print(e)
+            data['status'] = NEGATIVE
             if str(e) == 'item_id':
                 data['messages'].append(utils().new_message(NEGATIVE, AppStrings().get_single("failed_to_get_item"), data=data))
+            elif str(e) == 'user_not_found':
+                data['messages'].append(utils().new_message(NEGATIVE, AppStrings().get_single("user_get_failed"), data=data))
             else:
                 data['messages'].append(utils().new_message(NEGATIVE, AppStrings().get_single("borrow_failed"), data=data))
         
         return data
+    
+    def reduce_item_quantity(self, item_id, quantity=1):
+        data = utils().init()
+        try:
+            item = self.get(item_id=item_id, fetch=app_globals.SINGLE)
+            if item['status'] == NEGATIVE:
+                raise Exception('item_id')
+            item = item['items']
+            item.quantity = item.quantity - quantity
+            item.save()
+
+            data['status'] = POSITIVE
+        except:
+            data['status'] = NEGATIVE
+            data['messages'].append(utils().new_message(NEGATIVE, AppStrings().get_single("item_quanity_reduction_failed"), data=data))
+        return data
+
+
+    def get_borrowed_items(self, user_id):
+        data = utils().init()
+        try:
+            user = User().get_user(user_id=user_id)
+            if user['status'] == NEGATIVE:
+                raise Exception('user_not_found') 
+            borrowed_object = get_list_or_404(borrowed, user=user['user'])
+            # print(item_types)
+            data['borrowed'] = borrowed_object
+        except Exception as e:
+            print(e)
+            data['status'] = NEGATIVE
+            if str(e) == 'user_not_found':
+                data['messages'].append(utils().new_message(NEGATIVE, AppStrings().get_single("user_get_failed"), data=data))
+            else:
+                data['messages'].append(utils().new_message(NEGATIVE, AppStrings().get_single("failed_to_get_borrowed_items"), data=data))
+        return utils().return_data(data)
+
     
     def get_item_types(self):
         data = utils().init()

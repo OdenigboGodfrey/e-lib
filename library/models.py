@@ -62,6 +62,7 @@ class borrowed(models.Model):
     user = models.ForeignKey('client.user', blank=False, null=False, on_delete=models.CASCADE)
     borrowed_on = models.DateTimeField(default=datetime.now)
     max_duration = models.IntegerField(blank=False, null=False)
+    returned = models.IntegerField(blank=False, null=False, default=-1)
 
     def __str__(self):
-        return self.title
+        return str(self.item)

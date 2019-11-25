@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from  e_lib import app_globals 
 from  e_lib.app_globals import AppStrings 
 from .classes.item import Item
@@ -36,7 +36,7 @@ def add(request):
 
 def items(request):
     context = init_context()
-    items = Item().get()
+    items = Item().get(fetch=app_globals.ALL)
     if items['status'] != NEGATIVE:
         context['items'] = items['items']
     context['app_strings'] = AppStrings().get_single('failed_to_get_item', 'dict')
@@ -44,4 +44,27 @@ def items(request):
 
 def borrow(request, item_id):
     context = init_context()
+    registration_id = 0
+    if 'staff_id' in request.session:
+        registration_id = request.session['staff_id']
+    elif 'client_id' in request.session:
+        registration_id = request.session['client_id']
+    borrowed = Item().borrow(item_id, registration_id)
+    print(borrowed)
 
+    if 'json' in request.GET:
+        return json_response(context)
+    else:
+        return redirect('library:library-get-items')
+
+
+def borrowed(request, user_id):
+    context = init_context()
+    borrowed = Item().get_borrowed_items(user_id)
+    if borrowed['status'] != NEGATIVE:
+        context['borrowed'] = borrowed['borrowed']
+    
+    context['app_strings'] = AppStrings().get_single('failed_to_get_borrowed_items', 'dict')
+    if 'json' in request.GET:
+        return json_response(context)
+    return render(request, 'library/borrowed.html', context=context)
