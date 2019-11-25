@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Add Book</title>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            Title <input name="title" id="title" placeholder="Title" required />
+        </div>
+        <div>
+            Author <input name="author" id="author" placeholder="Author" required />
+        </div>
+        <div>
+            Published On <input name="published_on" id="published_on" placeholder="Published On" type="date" />
+        </div>
+        <div>
+            Item Type
+            <div>
+                <select name="item_type">
+                    {% if item_types %}
+                        {% for item_type in item_types %}
+                            <option value="{{item_type.id}}">{{item_type.title}}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="0">{{app_strings.no_item_types}}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <div>
+            Category {{app_strings}}
+            <div>
+                <select name="category">
+                    {% if categories %}
+                        {% for category in categories %}
+                            <option value="{{category.id}}">{{category.title}}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="0">{{app_strings.no_categories}}</option>
+                    {% endif %}
+                </select>
+            </div>
+        </div>
+        <div>
+            Price <input name="price" id="price" placeholder="Price" type="number" required />
+        </div>
+        <div>
+            Quantity <input name="quantity" id="quantity" placeholder="Quantity" type="number" required />
+        </div>
+        <div>
+            Rating
+            <select name="rating">
+                <option value="1">1 star</option>
+                <option value="2">2 star</option>
+                <option value="3">3 star</option>
+                <option value="4">4 star</option>
+                <option value="5">5 star</option>
+            </select>
+        </div>
+        <div>
+            Summary <textarea name="summary" id="summary" cols="40" rows="5" placeholder="Enter a brief summary"></textarea>
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</body>
+</html>

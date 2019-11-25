@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Items</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>published_on</th>
+            <th></th>
+        </tr>
+        {% if items %}
+            {% for item in items %}
+                <tr>
+                    <td>{{item.item_type}}</td>
+                    <td>{{item.title}}</td>
+                    <td>{{item.author}}</td>
+                    <td>{{item.category}}</td>
+                    <td>{{item.price}}</td>
+                    <td>{{item.published_on}}</td>
+                    <td>
+                        {% if item.quantity > 0 %}
+                            <a href="">Borrow</a>
+                        {% else %}
+                            Unavailable
+                        {% endif %}
+
+                    </td>
+                </tr>
+            {% endfor %}
+        {% else %}
+                <tr>
+                    <td>{{app_strings.failed_to_get_item}}</td>
+                </tr>
+        {% endif %}
+        
+    </table>
+</body>
+</html>
