@@ -13,8 +13,8 @@
             <th>Title</th>
             <th>Author</th> 
             <th>Borrowed on</th>
+            <th>Days left</th>
             <th>Returned</th>
-            <th></th>
         </tr>
         {% if borrowed %}
             {% for child in borrowed %}
@@ -23,6 +23,7 @@
                     <td>{{child.item.title}}</td>
                     <td>{{child.item.author}}</td>
                     <td>{{child.borrowed_on}}</td>
+                    <td>{{child.days_left}}</td>
                     <td>
                         {% if child.returned == -1 %}
                             No

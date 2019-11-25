@@ -3,12 +3,25 @@ from  e_lib import app_globals
 from  e_lib.app_globals import AppStrings 
 from .classes.item import Item
 from client.views import check_params, init_context, json_response, new_message
+from datetime import datetime
 
 POST = app_globals.POST
 GET = app_globals.GET
 POSITIVE = app_globals.POSITIVE
 NEUTRAL = app_globals.NEUTRAL
 NEGATIVE = app_globals.NEGATIVE
+
+def prepare_borrowed(borrowed):
+    now = datetime.now().date()
+    tbr = []
+    for child in borrowed:
+        mini = {'item': child.item, 'borrowed_on': child.borrowed_on}
+        then = child.borrowed_on.date()
+        tdelta = now - then
+        mini['days_left'] = child.max_duration - tdelta.days
+        tbr.append(mini)
+
+    return tbr
 
 def add(request):
     context = init_context({'id': request.session['staff_user_id']})
@@ -62,7 +75,7 @@ def borrowed(request, user_id):
     context = init_context()
     borrowed = Item().get_borrowed_items(user_id)
     if borrowed['status'] != NEGATIVE:
-        context['borrowed'] = borrowed['borrowed']
+        context['borrowed'] = prepare_borrowed(borrowed['borrowed'])
     
     context['app_strings'] = AppStrings().get_single('failed_to_get_borrowed_items', 'dict')
     if 'json' in request.GET:
